@@ -128,6 +128,15 @@
   .week.collapsed .chev{transform:rotate(-90deg)}
   .week.collapsed .tasks{display:none}
 
+  /* ---------- Ementa ---------- */
+  .secttl{font-family:var(--font-body);font-weight:900;letter-spacing:-.01em;font-size:clamp(22px,3.5vw,28px);text-align:center;margin:52px 0 4px}
+  .sectsub{text-align:center;color:var(--text-secondary);font-size:14px;margin:0 auto;max-width:520px}
+  .sectsub span{font-weight:800;color:var(--bg-primary)}
+  .aula{padding:15px 6px 6px;border-top:1px solid var(--divider);font-family:var(--font-body);font-weight:900;font-size:14px;color:var(--bg-primary);letter-spacing:.01em}
+  .tasks .aula:first-child{border-top:none}
+  .aula+.task{border-top:none}
+  .ementa-day .ttxt{font-size:14.5px}
+
   /* ---------- Tasks ---------- */
   .tasks{padding:2px 16px 14px}
   .task{display:flex;align-items:flex-start;gap:12px;padding:13px 6px;border-top:1px solid var(--divider)}
@@ -197,6 +206,10 @@
 
   <div id="planoRoot"></div>
 
+  <h2 class="secttl">Ementa do Curso — aula a aula</h2>
+  <p class="sectsub">Cada slide é um item. A Rosa pode ir marcando conforme cria. <span id="slidesProg">0/0 slides</span></p>
+  <div id="ementaRoot"></div>
+
   <div class="launch">
     <div class="d">22 de agosto · sábado</div>
     <h2>Módulo 1 — o curso começa</h2>
@@ -234,9 +247,10 @@ const plano = [
  ]},
  {id:"f2",titulo:"Fase 2 — Material e identidade",datas:"7–20 jul",ini:"2026-07-07",fim:"2026-07-20",tarefas:[
    {id:"f2t1",cat:"material",txt:"Apostila/handout em PDF (Canva)",resp:"Rosa · até 18/07"},
-   {id:"f2t2",cat:"material",txt:"Slides das aulas",resp:"Rosa · até 20/07"},
+   {id:"f2t2",cat:"material",txt:"Fazer os slides de todas as aulas (detalhado na Ementa abaixo)",resp:"Rosa · até 20/07"},
    {id:"f2t3",cat:"material",txt:"Logo simples + cartaz/post de divulgação (Canva)",resp:"Rosa · até 14/07"},
    {id:"f2t4",cat:"material",txt:"Ficha de inscrição, lista de presença e ficha de avaliação",resp:"Rosa · até 18/07"},
+   {id:"f2t5",cat:"material",txt:"Gravar vídeos e tirar fotos (para divulgação e registro)",resp:"Rosa · até 20/07"},
  ]},
  {id:"f3",titulo:"Fase 3 — Logística",datas:"7–27 jul · em paralelo",ini:"2026-07-07",fim:"2026-07-27",tarefas:[
    {id:"f3t1",cat:"logistica",txt:"Fechar o local (sala pelos 4 dias) — orçar 2 a 3 opções",resp:"Géssica · até 18/07"},
@@ -332,6 +346,167 @@ plano.forEach((sem,i)=>{
   });
 });
 
+// ---------- Ementa do curso ----------
+const ementa = [
+ {dia:"Dia 1", data:"22/08 · sábado", tema:"Fundamentos do cuidar", aulas:[
+   {nome:"Aula 1 — Quem é o cuidador", slides:[
+     "O que é ser cuidador (tipos: domiciliar, hospitalar, diarista)",
+     "Perfil e atitudes do bom cuidador",
+     "Ética, sigilo e respeito",
+     "Limites legais: o que o cuidador PODE fazer",
+     "Limites legais: o que é privativo da enfermagem (NÃO pode)",
+     "Direitos e deveres do cuidador",
+   ]},
+   {nome:"Aula 2 — Envelhecimento e a pessoa idosa", slides:[
+     "O que muda no corpo ao envelhecer",
+     "Alterações comuns (visão, audição, memória, mobilidade)",
+     "Autonomia x dependência",
+     "Estatuto do Idoso: direitos essenciais",
+     "Sinais de maus-tratos e como agir",
+   ]},
+   {nome:"Aula 3 — Comunicação e relação com paciente e família", slides:[
+     "Como se comunicar com o idoso",
+     "Escuta, paciência e empatia",
+     "Lidando com a família",
+     "Anotações do cuidador (registro do dia)",
+     "Lidando com conflitos",
+   ]},
+ ]},
+ {dia:"Dia 2", data:"23/08 · domingo", tema:"Cuidados básicos no dia a dia (prática)", aulas:[
+   {nome:"Aula 4 — Higiene e conforto", slides:[
+     "Banho no leito e no chuveiro",
+     "Higiene íntima e troca de fraldas",
+     "Higiene oral (incluindo prótese)",
+     "Cabelo, unhas e barba",
+     "Roupa de cama e conforto",
+     "[Prática] Banho no leito",
+   ]},
+   {nome:"Aula 5 — Mobilização e prevenção de quedas", slides:[
+     "Posicionamento no leito",
+     "Mudança de decúbito",
+     "Transferência cama–cadeira",
+     "Cadeira de rodas e andador",
+     "Prevenção de quedas em casa",
+     "[Prática] Transferência e posicionamento",
+   ]},
+   {nome:"Aula 6 — Prevenção de lesão por pressão (escaras)", slides:[
+     "O que é a escara e por que acontece",
+     "Pontos de risco no corpo",
+     "Como prevenir (mudança de posição, pele hidratada)",
+     "Sinais de alerta na pele",
+     "O que NÃO fazer",
+   ]},
+   {nome:"Aula 7 — Alimentação e hidratação", slides:[
+     "Alimentação saudável do idoso",
+     "Ajudar na hora de comer",
+     "Engasgo e disfagia: cuidados",
+     "Hidratação",
+     "Noções de dietas especiais (diabetes, hipertensão)",
+   ]},
+ ]},
+ {dia:"Dia 3", data:"29/08 · sábado", tema:"Saúde, doenças e segurança", aulas:[
+   {nome:"Aula 8 — Doenças crônicas mais comuns", slides:[
+     "Hipertensão",
+     "Diabetes",
+     "AVC (derrame)",
+     "Parkinson",
+     "Como apoiar o tratamento no dia a dia",
+   ]},
+   {nome:"Aula 9 — Alzheimer e demências", slides:[
+     "O que é demência e Alzheimer",
+     "Fases da doença",
+     "Lidando com confusão e agitação",
+     "Rotina e segurança em casa",
+     "Comunicação com quem tem demência",
+   ]},
+   {nome:"Aula 10 — Medicação com segurança", slides:[
+     "Os '5 certos' da medicação",
+     "Administração por via oral",
+     "Organização e horários (tabela de medicação)",
+     "Limites do cuidador (o que é da enfermagem)",
+     "Guarda e validade dos remédios",
+   ]},
+   {nome:"Aula 11 — Sinais de alerta e primeiros socorros", slides:[
+     "Sinais vitais: o que observar",
+     "Quando chamar ajuda / SAMU 192",
+     "Engasgo: o que fazer",
+     "Queda, desmaio e convulsão",
+     "Pequenos ferimentos e queimaduras",
+   ]},
+ ]},
+ {dia:"Dia 4", data:"30/08 · domingo", tema:"Hospital, mente e mercado", aulas:[
+   {nome:"Aula 12 — Acompanhante hospitalar", slides:[
+     "Papel do acompanhante no hospital",
+     "Rotina hospitalar e a equipe de saúde",
+     "O que observar e relatar",
+     "Direitos do acompanhante",
+     "Higiene e cuidados no ambiente hospitalar",
+   ]},
+   {nome:"Aula 13 — Saúde mental e autocuidado", slides:[
+     "Saúde emocional do paciente",
+     "Solidão e depressão no idoso",
+     "Sobrecarga do cuidador (burnout)",
+     "Autocuidado: como se proteger",
+     "Rede de apoio",
+   ]},
+   {nome:"Aula 14 — Noções de cuidados paliativos", slides:[
+     "O que são cuidados paliativos",
+     "Conforto e dignidade",
+     "Apoio à família",
+     "O papel do cuidador nesse momento",
+   ]},
+   {nome:"Aula 15 — Mercado de trabalho e encerramento", slides:[
+     "Como se apresentar (currículo simples)",
+     "Documentos e contratação",
+     "Onde encontrar vagas",
+     "Combinando valores e direitos",
+     "Entrega de certificados e foto da turma",
+   ]},
+ ]},
+];
+
+const eRoot = document.getElementById("ementaRoot");
+let eTotal = 0;
+ementa.forEach((d,di)=>{
+  let body="";
+  d.aulas.forEach((a,ai)=>{
+    body += `<div class="aula">${a.nome}</div>`;
+    a.slides.forEach((s,si)=>{
+      const id=`e${di}a${ai}s${si}`; eTotal++;
+      const done=state[id]?"done":"";
+      body += `<div class="task ${done}" data-task="${id}">
+        <label class="cbwrap"><input type="checkbox" class="cb" data-id="${id}" ${state[id]?"checked":""}><span class="cbbox">${CHK}</span></label>
+        <label class="ttxt">${s}</label>
+      </div>`;
+    });
+  });
+  const wk=document.createElement("div");
+  wk.className="week ementa-day collapsed";
+  wk.innerHTML=`
+    <div class="whead">
+      <span class="wnum">${d.dia.toUpperCase()}</span>
+      <div class="wtitle"><b>${d.tema}</b><span>${d.data} · ${d.aulas.length} aulas</span></div>
+      <span class="wprog" data-eprog="${di}"></span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="tasks">${body}</div>`;
+  eRoot.appendChild(wk);
+  wk.querySelector(".whead").addEventListener("click",e=>{ if(e.target.closest("input"))return; wk.classList.toggle("collapsed"); });
+  wk.querySelectorAll(".ttxt").forEach(lbl=>{
+    lbl.addEventListener("click",()=>{ const cb=lbl.closest(".task").querySelector(".cb"); cb.checked=!cb.checked; cb.dispatchEvent(new Event("change")); });
+  });
+});
+
+function refreshEmenta(){
+  let feitos=0;
+  ementa.forEach((d,di)=>{
+    let f=0,t=0;
+    d.aulas.forEach((a,ai)=>a.slides.forEach((s,si)=>{ t++; if(state[`e${di}a${ai}s${si}`]){f++;feitos++;} }));
+    const el=document.querySelector(`[data-eprog="${di}"]`); if(el) el.textContent=`${f}/${t}`;
+  });
+  const sp=document.getElementById("slidesProg"); if(sp) sp.textContent=`${feitos}/${eTotal} slides`;
+}
+
 function refresh(){
   let feitas=0;
   plano.forEach(sem=>{
@@ -351,7 +526,7 @@ document.querySelectorAll(".cb").forEach(cb=>{
     const id=cb.dataset.id;
     if(cb.checked)state[id]=true; else delete state[id];
     cb.closest(".task").classList.toggle("done",cb.checked);
-    save();refresh();
+    save();refresh();refreshEmenta();
   });
 });
 
@@ -366,10 +541,11 @@ document.getElementById("resetBtn").onclick=()=>{
   if(confirm("Apagar todas as marcações?")){state={};save();
     document.querySelectorAll(".cb").forEach(c=>c.checked=false);
     document.querySelectorAll(".task").forEach(t=>t.classList.remove("done"));
-    refresh();}
+    refresh();refreshEmenta();}
 };
 
 refresh();
+refreshEmenta();
 </script>
 </body>
 </html>
