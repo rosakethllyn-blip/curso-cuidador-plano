@@ -146,6 +146,20 @@
   .campo:focus{border-color:var(--bg-primary);box-shadow:0 0 0 3px var(--ring-focus)}
   .campolink{color:var(--text-link);font-weight:700}
 
+  /* ---------- Subcategoria: ementa dentro da tarefa de slides ---------- */
+  .subwrap{padding:2px 6px 12px 40px}
+  .subhead{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 0;user-select:none}
+  .subhead:hover .sublbl{color:var(--text-primary)}
+  .sublbl{font-size:12.5px;font-weight:800;color:var(--text-secondary);white-space:nowrap}
+  .subbarwrap{flex:1;min-width:60px}
+  .subbar{height:8px;border-radius:var(--radius-pill);background:var(--bg-surface-alt);overflow:hidden;border:1px solid var(--border-default)}
+  .subbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand-400),var(--brand-700));transition:width .4s var(--ease)}
+  .subpct{font-size:12px;font-weight:800;color:var(--text-secondary);white-space:nowrap}
+  .subwrap .chev{transition:transform .25s var(--ease);color:var(--text-muted);font-size:13px}
+  .subwrap.collapsed .chev{transform:rotate(-90deg)}
+  .subwrap.collapsed .ementaSub{display:none}
+  .ementaSub .week{margin-top:8px;box-shadow:none}
+
   /* ---------- Calendário de conteúdo ---------- */
   .citem{padding:14px 6px}
   .citem+.citem{border-top:1px solid var(--divider)}
@@ -229,10 +243,6 @@
 
   <div id="planoRoot"></div>
 
-  <h2 class="secttl">Ementa do Curso — aula a aula</h2>
-  <p class="sectsub">Cada slide é um item. A Rosa pode ir marcando conforme cria. <span id="slidesProg">0/0 slides</span></p>
-  <div id="ementaRoot"></div>
-
   <h2 class="secttl">Calendário de Conteúdo — divulgação</h2>
   <p class="sectsub">Posts, stories e reels com copy pronta e ideias. Toque em "Copiar legenda" pra usar. <span id="postProg">0/0 publicados</span></p>
   <div id="conteudoRoot"></div>
@@ -279,7 +289,7 @@ const plano = [
  ]},
  {id:"f2",titulo:"Fase 2 — Material e identidade",datas:"7–20 jul",ini:"2026-07-07",fim:"2026-07-20",tarefas:[
    {id:"f2t1",cat:"material",txt:"Apostila/handout em PDF (Canva)",resp:"Rosa · até 18/07"},
-   {id:"f2t2",cat:"material",txt:"Fazer os slides de todas as aulas (detalhado na Ementa abaixo)",resp:"Rosa · até 20/07"},
+   {id:"f2t2",cat:"material",txt:"Fazer os slides de todas as aulas (abra a ementa abaixo e marque cada slide)",resp:"Rosa · até 20/07"},
    {id:"f2t3",cat:"material",txt:"Logo simples + cartaz/post de divulgação (Canva)",resp:"Rosa · até 14/07"},
    {id:"f2t4",cat:"material",txt:"Ficha de inscrição, lista de presença e ficha de avaliação",resp:"Rosa · até 18/07"},
    {id:"f2t5",cat:"material",txt:"Gravar vídeos e tirar fotos (para divulgação e registro)",resp:"Rosa · até 20/07"},
@@ -355,6 +365,7 @@ plano.forEach((sem,i)=>{
         const c=cats[t.cat];
         const campo=campos.has(t.id)?`<div class="campowrap"><input class="campo" data-cid="${t.id}" placeholder="✍️ Anote aqui o que ficou definido..." value="${(state['c_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
         const link=links.has(t.id)?`<div class="campowrap"><input class="campo campolink" type="url" data-lid="${t.id}" placeholder="🔗 Cole o link do arquivo (Drive, Canva...)" value="${(state['l_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
+        const sub=t.id==="f2t2"?`<div class="subwrap collapsed" id="ementaWrap"><div class="subhead" id="ementaToggle"><span class="chev">▾</span><span class="sublbl">Ementa — slides por aula</span><div class="subbarwrap"><div class="subbar"><i id="ementaBar"></i></div></div><span class="subpct" id="ementaPct">0/0</span></div><div class="ementaSub" id="ementaRoot"></div></div>`:"";
         return `<div class="task ${done}" data-task="${t.id}">
           <label class="cbwrap">
             <input type="checkbox" class="cb" data-id="${t.id}" ${state[t.id]?"checked":""}>
@@ -362,7 +373,7 @@ plano.forEach((sem,i)=>{
           </label>
           <label class="ttxt">${t.txt}<small>${t.resp}</small></label>
           <span class="tag" style="background:${c.cor}">${c.nome}</span>
-        </div>${campo}${link}`;
+        </div>${campo}${link}${sub}`;
       }).join("")}
     </div>`;
   root.appendChild(wk);
@@ -531,6 +542,9 @@ ementa.forEach((d,di)=>{
   });
 });
 
+const _et=document.getElementById("ementaToggle");
+if(_et) _et.addEventListener("click",()=>{ const w=document.getElementById("ementaWrap"); if(w) w.classList.toggle("collapsed"); });
+
 function refreshEmenta(){
   let feitos=0;
   ementa.forEach((d,di)=>{
@@ -538,7 +552,9 @@ function refreshEmenta(){
     d.aulas.forEach((a,ai)=>a.slides.forEach((s,si)=>{ t++; if(state[`e${di}a${ai}s${si}`]){f++;feitos++;} }));
     const el=document.querySelector(`[data-eprog="${di}"]`); if(el) el.textContent=`${f}/${t}`;
   });
-  const sp=document.getElementById("slidesProg"); if(sp) sp.textContent=`${feitos}/${eTotal} slides`;
+  const pct=eTotal?Math.round(feitos/eTotal*100):0;
+  const bar=document.getElementById("ementaBar"); if(bar) bar.style.width=pct+"%";
+  const pc=document.getElementById("ementaPct"); if(pc) pc.textContent=`${feitos}/${eTotal} slides`;
 }
 
 // ---------- Calendário de conteúdo (divulgação) ----------
