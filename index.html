@@ -176,6 +176,24 @@
   .copybtn{margin:9px 0 0 40px;font-size:12.5px;font-weight:800;border:1px solid var(--border-strong);
     background:transparent;color:var(--text-primary);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer}
   .copybtn:hover{background:var(--bg-surface-alt)}
+  .cfield{margin-top:10px}
+  .clabel{font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 2px 40px}
+
+  /* ---------- Calculadora de preço ---------- */
+  .calcwrap{margin:2px 16px 12px 40px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-md);padding:14px 16px;box-shadow:var(--shadow-sm)}
+  .calctitle{font-weight:900;font-size:14px;color:var(--text-primary)}
+  .calcsub{font-size:12.5px;color:var(--text-secondary);margin:2px 0 12px;line-height:1.45}
+  .calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .calclbl{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--text-secondary)}
+  .calcin{font-family:var(--font-body);font-size:14px;color:var(--text-primary);background:var(--bg-surface-alt);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:8px 10px;outline:none;width:100%}
+  .calcin:focus{border-color:var(--bg-primary);box-shadow:0 0 0 3px var(--ring-focus)}
+  .calcout{border-top:1px solid var(--divider);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+  .calcrow{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--text-secondary)}
+  .calcrow b{color:var(--text-primary);font-weight:800;white-space:nowrap}
+  .calcbig{background:var(--bg-primary-soft);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:9px 11px;margin:2px 0}
+  .calcbig span{color:var(--text-primary);font-weight:800;font-size:14px}
+  .calcbig b{color:var(--bg-primary);font-weight:900;font-size:18px}
+  @media(max-width:520px){.calcgrid{grid-template-columns:1fr}}
 
   /* ---------- Tasks ---------- */
   .tasks{padding:2px 16px 14px}
@@ -274,6 +292,48 @@ const campos = new Set(["f0t1","f0t2","f0t3","f0t4","f0t5","f1t3","f3t1","f3t5",
 // tarefas de material/arquivo → ganham campo pra colar o link do arquivo
 const links = new Set(["f1t5","f2t1","f2t2","f2t3","f2t4","f2t5","f3t3"]);
 
+// ---------- Calculadora de preço (na tarefa f0t3) ----------
+const calcFields = [
+  ["aluguel","Aluguel da sala (4 dias)"],
+  ["material","Material impresso (apostilas + certificados)"],
+  ["coffee","Coffee break (4 dias)"],
+  ["praticos","Materiais práticos (luvas, fraldas, etc.)"],
+  ["divulgacao","Divulgação (impulsionar posts, cartazes)"],
+  ["taxas","Taxas (maquininha/PIX) e outros"],
+];
+function buildCalc(){
+  const inp=(k,ph)=>`<label class="calclbl">${ph}<input type="number" min="0" class="calcin" data-ck="${k}" value="${state['calc_'+k]||''}" placeholder="R$ 0"></label>`;
+  return `<div class="calcwrap">
+    <div class="calctitle">🧮 Calculadora de preço</div>
+    <div class="calcsub">Preencha os gastos e quanto cada uma quer ganhar. O preço por aluno é calculado sozinho e fica salvo.</div>
+    <div class="calcgrid">${calcFields.map(f=>inp(f[0],f[1])).join("")}</div>
+    <div class="calcgrid">${inp("ganhoRosa","Quanto a Rosa quer ganhar")}${inp("ganhoGessica","Quanto a Géssica quer ganhar")}${inp("alunos","Nº de alunos na turma")}</div>
+    <div class="calcout">
+      <div class="calcrow"><span>Custos totais</span><b id="calcCustos">R$ 0</b></div>
+      <div class="calcrow"><span>Precisa arrecadar (custos + ganhos)</span><b id="calcArrecadar">R$ 0</b></div>
+      <div class="calcrow calcbig"><span>Preço por aluno</span><b id="calcPreco">R$ 0</b></div>
+      <div class="calcrow"><span>Faturamento na turma cheia</span><b id="calcFat">R$ 0</b></div>
+      <div class="calcrow"><span>Lucro total das duas</span><b id="calcLucro">R$ 0</b></div>
+    </div>
+  </div>`;
+}
+function refreshCalc(){
+  if(!document.querySelector(".calcwrap")) return;
+  const v=k=>parseFloat(state['calc_'+k])||0;
+  const custos=calcFields.reduce((s,f)=>s+v(f[0]),0);
+  const ganhos=v("ganhoRosa")+v("ganhoGessica");
+  const alunos=v("alunos");
+  const arrecadar=custos+ganhos;
+  const preco=alunos>0?arrecadar/alunos:0;
+  const fmt=n=>"R$ "+n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const set=(id,t)=>{const e=document.getElementById(id); if(e)e.textContent=t;};
+  set("calcCustos",fmt(custos));
+  set("calcArrecadar",fmt(arrecadar));
+  set("calcPreco",alunos>0?fmt(preco):"defina o nº de alunos");
+  set("calcFat",fmt(preco*alunos));
+  set("calcLucro",fmt(ganhos));
+}
+
 const plano = [
  {id:"f0",titulo:"Fase 0 — Decisões",datas:"16–22 jun · semana de partida",ini:"2026-06-16",fim:"2026-06-22",tarefas:[
    {id:"f0t1",cat:"decisao",txt:"Definir o nome do curso e uma marca provisória",resp:"Dupla"},
@@ -369,6 +429,7 @@ plano.forEach((sem,i)=>{
         const campo=campos.has(t.id)?`<div class="campowrap"><input class="campo" data-cid="${t.id}" placeholder="✍️ Anote aqui o que ficou definido..." value="${(state['c_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
         const link=links.has(t.id)?`<div class="campowrap"><input class="campo campolink" type="url" data-lid="${t.id}" placeholder="🔗 Cole o link do arquivo (Drive, Canva...)" value="${(state['l_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
         const sub=t.id==="f2t2"?`<div class="subwrap collapsed" id="ementaWrap"><div class="subhead" id="ementaToggle"><span class="chev">▾</span><span class="sublbl">Ementa — slides por aula</span><div class="subbarwrap"><div class="subbar"><i id="ementaBar"></i></div></div><span class="subpct" id="ementaPct">0/0</span></div><div class="ementaSub" id="ementaRoot"></div></div>`:"";
+        const calc=t.id==="f0t3"?buildCalc():"";
         return `<div class="task ${done}" data-task="${t.id}">
           <label class="cbwrap">
             <input type="checkbox" class="cb" data-id="${t.id}" ${state[t.id]?"checked":""}>
@@ -376,7 +437,7 @@ plano.forEach((sem,i)=>{
           </label>
           <label class="ttxt">${t.txt}<small>${t.resp}</small></label>
           <span class="tag" style="background:${c.cor}">${c.nome}</span>
-        </div>${campo}${link}${sub}`;
+        </div>${campo}${link}${sub}${calc}`;
       }).join("")}
     </div>`;
   root.appendChild(wk);
@@ -630,47 +691,63 @@ const tipos = { Feed:"#C27250", Reels:"#7C18E6", Story:"#4A9CB5" };
 const conteudo = [
  {semana:"Semana 1 · 21–27 jul", foco:"Apresentação e o problema", posts:[
    {data:"Seg 21/07", tipo:"Feed", tema:"Lançamento — chegou a Academia do Cuidador",
+    arte:"CAPA: Chegou a Academia do Cuidador — formação de cuidadores, por enfermeiras.\n\nCARD 2 — PRA QUEM É: quem quer começar a trabalhar cuidando de idosos, do zero.\n\nCARD 3 — O QUE VOCÊ APRENDE: higiene, mobilização, sinais vitais, primeiros socorros e mais — na prática.\n\nCARD 4 — PRÓXIMA TURMA: agosto, presencial, vagas limitadas.",
     copy:"Você já pensou em trabalhar cuidando de pessoas — mas não sabe por onde começar? ✋\n\nChegou a Academia do Cuidador: formação de cuidadores e acompanhantes, dada por enfermeiras, com prática de verdade.\n\n📍 Turma presencial em [cidade] — agosto\n🎓 Com certificado\n\nVagas limitadas. Salva esse post e fica de olho 👀\n\n#cuidadordeidosos #cuidador #[cidade]",
-    ideia:"Carrossel: capa 'Academia do Cuidador' + 3 cards (pra quem é · o que você aprende · próxima turma). Foto das duas enfermeiras."},
+    imagem:"Carrossel (4 cards). Capa com foto das duas de jaleco, fundo claro; cards com ícones simples nas cores da marca."},
    {data:"Qua 23/07", tipo:"Reels", tema:"A oportunidade — uma nova profissão",
+    arte:"Uma nova profissão tá te esperando 💙\nCurso de Cuidador — agosto",
     copy:"O Brasil está envelhecendo e faltam cuidadores preparados. Essa pode ser a sua nova profissão. 💙\n\nCurso presencial em agosto, do zero ao certificado. Comenta EU QUERO que a gente te chama no direct.",
-    ideia:"Reels de 20–30s falando pra câmera: 'Toda família um dia precisa de um cuidador. Mas pouca gente sabe cuidar de verdade. Foi por isso que criamos esse curso.'"},
+    imagem:"Vocês duas em pé, fundo neutro, boa luz; texto grande sobreposto.",
+    roteiro:"ATO 1 — GANCHO (0–5s)\nCena: Rosa olhando pra câmera, close.\nRosa: 'Toda família, um dia, vai precisar de um cuidador.'\n\nATO 2 — DESENVOLVIMENTO (5–20s)\nCena: corta para a Géssica.\nGéssica: 'Mas pouca gente sabe cuidar de verdade — e isso é uma profissão que só cresce.'\nRosa: 'A gente é enfermeira e montou um curso pra te ensinar do zero, na prática.'\n\nATO 3 — CHAMADA (20–30s)\nCena: as duas juntas.\nJuntas: 'Turma presencial em agosto.'\nRosa: 'Comenta EU QUERO que a gente te chama no direct.'\n(Texto na tela: Vagas limitadas)"},
    {data:"Sex 25/07", tipo:"Story", tema:"Bastidor + enquete",
-    copy:"Vem aí nossa 1ª turma! 🎉\nCaixinha: o que você mais quer aprender sobre cuidar de idosos?\nEnquete: Você faria do cuidado uma profissão? (Sim / Tenho vontade)",
-    ideia:"Sequência de stories mostrando vocês preparando o material, com figurinha de enquete e caixinha de perguntas."},
+    arte:"STORY 1: Vem aí nossa 1ª turma 🎉\nSTORY 2 (enquete): Você faria do cuidado uma profissão? — Sim / Tenho vontade\nSTORY 3 (caixinha): O que você mais quer aprender sobre cuidar de idosos?",
+    copy:"",
+    imagem:"Sequência mostrando vocês preparando o material do curso; usar figurinha de enquete e caixinha de perguntas."},
  ]},
  {semana:"Semana 2 · 28 jul–3 ago", foco:"Autoridade (conteúdo de valor)", posts:[
    {data:"Seg 28/07", tipo:"Feed", tema:"3 erros ao cuidar de um idoso em casa",
+    arte:"CAPA: 3 erros ao cuidar de um idoso em casa (e como evitar)\nCARD 2: 1) Dar banho com pressa e com frio\nCARD 3: 2) Não mudar o idoso de posição (risco de lesão por pressão)\nCARD 4: 3) Misturar os remédios sem organização\nCARD 5: Quer aprender o jeito certo? Curso em agosto — link na bio.",
     copy:"3 erros comuns ao cuidar de um idoso em casa (e como evitar) 👇\n\n1) Dar banho com pressa e com frio\n2) Não mudar o idoso de posição (risco de lesão por pressão)\n3) Misturar os remédios sem organização\n\nIsso e muito mais a gente ensina NA PRÁTICA no curso. 🎓\nInscrições em breve — link na bio.\n\n#cuidadordeidosos #saúde #cuidador",
-    ideia:"Carrossel educativo, 1 erro por card. Assinado por enfermeiras (reforça autoridade)."},
+    imagem:"Carrossel, 1 erro por card, ícones simples nas cores da marca; foto de vocês no último card."},
    {data:"Qua 30/07", tipo:"Reels", tema:"Dica prática — transferência segura",
+    arte:"Como tirar o idoso da cama SEM machucar as costas 💪",
     copy:"Como ajudar um idoso a levantar da cama sem machucar as suas costas (nem as dele). Salva pra não esquecer! 💪\n\nNo curso você treina isso na prática, com a gente do lado.",
-    ideia:"Reels demonstrando a transferência cama–cadeira (Aula 9 da ementa). Mostra que o curso é mão na massa."},
+    imagem:"Gravar a demonstração real da transferência cama–cadeira (uma cama/maca e uma cadeira).",
+    roteiro:"ATO 1 — GANCHO (0–5s)\nCena: Géssica ao lado de uma cama.\nGéssica: 'Tá tirando o idoso da cama do jeito errado? Olha só.'\n\nATO 2 — DEMONSTRAÇÃO (5–25s)\nCena: Rosa demonstra a técnica enquanto a Géssica narra.\nGéssica: 'Dobre os joelhos, costas retas, traga ele pertinho de você...'\nRosa (demonstrando): 'E nunca puxe pelo braço.'\n\nATO 3 — CHAMADA (25–30s)\nCena: as duas.\nRosa: 'Isso a gente treina na prática no curso.'\nGéssica: 'Salva e vem aprender — link na bio.'"},
    {data:"Sex 01/08", tipo:"Feed", tema:"Abrindo as inscrições",
+    arte:"CAPA: Inscrições ABERTAS 🎉 — 1ª turma\nCARD 2: 📅 22, 23, 29 e 30/08 (dois fins de semana)\nCARD 3: 📍 Presencial em [cidade] · 28h\nCARD 4: ✅ Aula prática + certificado · por enfermeiras\nCARD 5: Vagas limitadas — link na bio",
     copy:"Chegou a hora! 🎉 Abrimos as inscrições da 1ª turma da Academia do Cuidador.\n\n✅ 4 dias: 22, 23, 29 e 30/08 (dois fins de semana)\n✅ Presencial em [cidade]\n✅ Aula prática + certificado\n✅ Dado por enfermeiras\n\nVagas limitadas. Garanta a sua no link da bio 👆",
-    ideia:"Card com os 4 selos (datas · local · prático · certificado) + foto das duas. Fixar no topo do perfil."},
+    imagem:"Card com os selos (datas · local · prático · certificado) + foto das duas. Fixar no topo do perfil."},
  ]},
  {semana:"Semana 3 · 4–10 ago", foco:"Prova social + empurrão", posts:[
    {data:"Seg 04/08", tipo:"Story", tema:"Prova social + vagas restantes",
-    copy:"As inscrições já começaram e as vagas estão indo! 🔥\nRestam [X] vagas.\nQuer a sua? Manda QUERO no direct.",
-    ideia:"Stories com prints (autorizados) de quem está perguntando/se inscrevendo + contador de vagas."},
+    arte:"STORY 1: As vagas estão indo! 🔥 Restam [X]\nSTORY 2: (print de inscrição/dúvida — com autorização)\nSTORY 3: Quer a sua? Manda QUERO no direct",
+    copy:"",
+    imagem:"Prints reais (autorizados) de quem está se inscrevendo + figurinha de contador de vagas."},
    {data:"Qua 06/08", tipo:"Reels", tema:"Por que ESSE curso (diferencial)",
+    arte:"Curso de cuidador tem vários. ESSE é diferente 💙",
     copy:"Existe curso de cuidador por aí. Mas quantos são dados por enfermeiras, com prática de verdade e foco em te ajudar a conseguir trabalho? 💙\n\nEsse é o nosso. Inscrições abertas — link na bio.",
-    ideia:"Vocês duas na câmera explicando o diferencial: enfermeiras + prática + empregabilidade."},
+    imagem:"Vocês duas falando, alternando os cortes; fundo da marca.",
+    roteiro:"ATO 1 — GANCHO (0–5s)\nCena: Rosa, close.\nRosa: 'Existe curso de cuidador em todo lugar. Por que fazer o nosso?'\n\nATO 2 — ARGUMENTO (5–22s)\nCena: alterna Rosa e Géssica.\nGéssica: 'Porque quem ensina é enfermeira — não é teoria solta.'\nRosa: 'Tem aula prática de verdade: banho no leito, sinais vitais, primeiros socorros.'\nGéssica: 'E a gente foca em te ajudar a conseguir trabalho.'\n\nATO 3 — CHAMADA (22–30s)\nRosa: 'Inscrições abertas, vagas limitadas.'\nGéssica: 'Link na bio. Bora?'"},
    {data:"Sex 08/08", tipo:"Feed", tema:"Quebra de objeção — nunca cuidei de ninguém",
+    arte:"CAPA: 'Nunca cuidei de ninguém... será que consigo?'\nCARD 2: SIM! O curso é do ZERO.\nCARD 3: A gente ensina tudo, passo a passo, na prática.\nCARD 4: Últimos dias de inscrição — link na bio",
     copy:"Mas eu nunca cuidei de ninguém, será que consigo? 🤔\n\nSIM. 🙌 Esse curso é do ZERO, pra quem quer começar. A gente ensina tudo passo a passo, na prática.\n\nÚltimos dias de inscrição — link na bio.\n\n#cuidador #primeiroemprego",
-    ideia:"Carrossel respondendo as 5 dúvidas mais comuns de quem quer começar."},
+    imagem:"Carrossel acolhedor respondendo as dúvidas mais comuns; foto de vocês sorrindo."},
  ]},
  {semana:"Semana 4 · 11–17 ago", foco:"Urgência / última chamada", posts:[
    {data:"Seg 11/08", tipo:"Story", tema:"Contagem regressiva",
-    copy:"⏳ Faltam poucos dias pra fechar as inscrições!\nA turma começa 22/08.\nNão fica de fora — link na bio.",
-    ideia:"Stories diários com a figurinha de contagem regressiva até 14/08."},
+    arte:"STORY (diário): Faltam [X] dias! ⏳\nA turma começa 22/08\nLink na bio",
+    copy:"",
+    imagem:"Stories diários com a figurinha de contagem regressiva até 14/08."},
    {data:"Qua 13/08", tipo:"Reels", tema:"Última chamada",
+    arte:"🚨 AMANHÃ fecha! Última chance — inscrições até 14/08",
     copy:"🚨 ÚLTIMA CHAMADA: as inscrições fecham AMANHÃ (14/08)!\n\nÚltima chance de garantir sua vaga na 1ª turma da Academia do Cuidador. Link na bio agora.",
-    ideia:"Reels curto e urgente, vocês falando 'é amanhã que fecha'. Texto grande na tela."},
+    imagem:"Reels curto e urgente, energia alta, texto grande na tela.",
+    roteiro:"ATO 1 — GANCHO (0–4s)\nCena: as duas, energia alta.\nJuntas: 'É amanhã!'\nRosa: 'As inscrições fecham amanhã, 14 de agosto.'\n\nATO 2 — REFORÇO (4–18s)\nCena: alterna.\nGéssica: 'É a sua última chance de entrar na 1ª turma da Academia do Cuidador.'\nRosa: 'Curso presencial, prático, com certificado.'\n\nATO 3 — CHAMADA (18–25s)\nGéssica: 'Corre que ainda dá tempo.'\nRosa: 'Link na bio AGORA.'\n(Texto na tela: Inscrições até 14/08)"},
    {data:"Sex 15/08", tipo:"Story", tema:"Encerrou + lista de espera",
-    copy:"Inscrições ENCERRADAS! 🙏 Turma cheia — obrigada a todas!\n\nFicou de fora? Entra na lista de espera da próxima turma: manda LISTA no direct.",
-    ideia:"Story de agradecimento + captura da lista de espera (já começa a alimentar a 2ª turma)."},
+    arte:"STORY 1: Inscrições ENCERRADAS 🙏 Turma cheia!\nSTORY 2: Obrigada a todas 💙\nSTORY 3: Ficou de fora? Manda LISTA pra entrar na próxima turma",
+    copy:"",
+    imagem:"Story de agradecimento + captura de lista de espera (já alimenta a 2ª turma)."},
  ]},
 ];
 
@@ -682,15 +759,19 @@ conteudo.forEach((sem,wi)=>{
     const id=`p${wi}i${pi}`; pTotal++;
     const done=state[id]?"done":"";
     const cor=tipos[p.tipo]||"#7C6F66";
+    const esc=s=>String(s||"").replace(/</g,"&lt;");
+    let fields="";
+    if(p.arte) fields+=`<div class="cfield"><div class="clabel">✏️ Texto da arte</div><div class="copybox" data-copy="${id}-arte">${esc(p.arte)}</div><button class="copybtn" data-copybtn="${id}-arte">Copiar texto da arte</button></div>`;
+    if(p.copy) fields+=`<div class="cfield"><div class="clabel">📝 Legenda</div><div class="copybox" data-copy="${id}-leg">${esc(p.copy)}</div><button class="copybtn" data-copybtn="${id}-leg">Copiar legenda</button></div>`;
+    if(p.roteiro) fields+=`<div class="cfield"><div class="clabel">🎬 Roteiro (3 atos)</div><div class="copybox" data-copy="${id}-rot">${esc(p.roteiro)}</div><button class="copybtn" data-copybtn="${id}-rot">Copiar roteiro</button></div>`;
+    if(p.imagem) fields+=`<div class="ideia"><b>🖼️ Sugestão de imagem:</b> ${p.imagem}</div>`;
     body += `<div class="citem" data-citem="${id}">
       <div class="task ${done}" data-task="${id}">
         <label class="cbwrap"><input type="checkbox" class="cb" data-id="${id}" ${state[id]?"checked":""}><span class="cbbox">${CHK}</span></label>
         <label class="ttxt"><span class="cdate">${p.data}</span> — ${p.tema}</label>
         <span class="ctag" style="background:${cor}">${p.tipo}</span>
       </div>
-      <div class="copybox" data-copy="${id}">${p.copy.replace(/</g,'&lt;')}</div>
-      <button class="copybtn" data-copybtn="${id}">Copiar legenda</button>
-      <div class="ideia"><b>Ideia:</b> ${p.ideia}</div>
+      ${fields}
     </div>`;
   });
   const wk=document.createElement("div");
@@ -759,6 +840,11 @@ document.querySelectorAll(".campo").forEach(inp=>{
   });
 });
 
+// calculadora de preço — salva e recalcula ao digitar
+document.querySelectorAll(".calcin").forEach(inp=>{
+  inp.addEventListener("input",()=>{ state["calc_"+inp.dataset.ck]=inp.value; save(); refreshCalc(); });
+});
+
 // contagem regressiva
 const alvo=new Date("2026-08-22T00:00:00");
 const dias=Math.max(0,Math.ceil((alvo-hoje)/(1000*60*60*24)));
@@ -768,7 +854,7 @@ document.getElementById("expandAll").onclick=()=>document.querySelectorAll(".wee
 document.getElementById("collapseAll").onclick=()=>document.querySelectorAll(".week").forEach(w=>w.classList.add("collapsed"));
 document.getElementById("resetBtn").onclick=()=>{
   if(confirm("Apagar todas as marcações? (suas anotações e links continuam salvos)")){
-    Object.keys(state).forEach(k=>{ if(!k.startsWith("c_")&&!k.startsWith("l_")) delete state[k]; });save();
+    Object.keys(state).forEach(k=>{ if(!k.startsWith("c_")&&!k.startsWith("l_")&&!k.startsWith("calc_")) delete state[k]; });save();
     document.querySelectorAll(".cb").forEach(c=>c.checked=false);
     document.querySelectorAll(".task").forEach(t=>t.classList.remove("done"));
     refresh();refreshEmenta();refreshConteudo();}
@@ -777,6 +863,7 @@ document.getElementById("resetBtn").onclick=()=>{
 refresh();
 refreshEmenta();
 refreshConteudo();
+refreshCalc();
 </script>
 </body>
 </html>
