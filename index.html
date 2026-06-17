@@ -137,6 +137,29 @@
   .aula+.task{border-top:none}
   .ementa-day .ttxt{font-size:14.5px}
 
+  /* ---------- Campo "definido" (editável) ---------- */
+  .campowrap{padding:0 16px 12px 40px;margin-top:-2px}
+  .campo{width:100%;font-family:var(--font-body);font-size:14px;color:var(--text-primary);
+    background:var(--bg-surface-alt);border:1px solid var(--border-default);border-radius:var(--radius-sm);
+    padding:9px 12px;outline:none;transition:border-color var(--motion-fast),box-shadow var(--motion-fast)}
+  .campo::placeholder{color:var(--text-muted)}
+  .campo:focus{border-color:var(--bg-primary);box-shadow:0 0 0 3px var(--ring-focus)}
+  .campolink{color:var(--text-link);font-weight:700}
+
+  /* ---------- Calendário de conteúdo ---------- */
+  .citem{padding:14px 6px}
+  .citem+.citem{border-top:1px solid var(--divider)}
+  .cdate{font-weight:900;font-size:12.5px;color:var(--text-secondary);white-space:nowrap}
+  .ctag{font-size:11px;font-weight:800;color:#fff;border-radius:var(--radius-sm);padding:3px 9px;white-space:nowrap;letter-spacing:.02em}
+  .copybox{background:var(--bg-surface-alt);border:1px solid var(--border-default);border-radius:var(--radius-md);
+    padding:12px 14px;margin:10px 0 0 40px;font-size:14px;line-height:1.55;white-space:pre-wrap;color:var(--text-primary)}
+  .citem:has(.task.done) .copybox{opacity:.5}
+  .ideia{font-size:13px;color:var(--text-secondary);margin:9px 0 0 40px;line-height:1.5}
+  .ideia b{color:var(--text-primary)}
+  .copybtn{margin:9px 0 0 40px;font-size:12.5px;font-weight:800;border:1px solid var(--border-strong);
+    background:transparent;color:var(--text-primary);border-radius:var(--radius-pill);padding:6px 13px;cursor:pointer}
+  .copybtn:hover{background:var(--bg-surface-alt)}
+
   /* ---------- Tasks ---------- */
   .tasks{padding:2px 16px 14px}
   .task{display:flex;align-items:flex-start;gap:12px;padding:13px 6px;border-top:1px solid var(--divider)}
@@ -210,6 +233,10 @@
   <p class="sectsub">Cada slide é um item. A Rosa pode ir marcando conforme cria. <span id="slidesProg">0/0 slides</span></p>
   <div id="ementaRoot"></div>
 
+  <h2 class="secttl">Calendário de Conteúdo — divulgação</h2>
+  <p class="sectsub">Posts, stories e reels com copy pronta e ideias. Toque em "Copiar legenda" pra usar. <span id="postProg">0/0 publicados</span></p>
+  <div id="conteudoRoot"></div>
+
   <div class="launch">
     <div class="d">22 de agosto · sábado</div>
     <h2>Módulo 1 — o curso começa</h2>
@@ -228,6 +255,11 @@ const cats = {
   divulgacao:{nome:"Divulgação",cor:"#E5484D"},
   curso:{nome:"Curso",cor:"#1FA85A"},
 };
+
+// tarefas de "definir" → ganham campo de texto pra anotar o que ficou decidido
+const campos = new Set(["f0t1","f0t2","f0t3","f0t4","f0t5","f1t3","f3t1","f3t5","f4t5"]);
+// tarefas de material/arquivo → ganham campo pra colar o link do arquivo
+const links = new Set(["f1t5","f2t1","f2t2","f2t3","f2t4","f2t5","f3t3"]);
 
 const plano = [
  {id:"f0",titulo:"Fase 0 — Decisões",datas:"16–22 jun · semana de partida",ini:"2026-06-16",fim:"2026-06-22",tarefas:[
@@ -261,7 +293,7 @@ const plano = [
  ]},
  {id:"f4",titulo:"Fase 4 — Divulgação e vendas ⭐",datas:"21 jul – 17 ago · a fase que decide tudo",ini:"2026-07-21",fim:"2026-08-17",tarefas:[
    {id:"f4t1",cat:"divulgacao",txt:"Lançar a divulgação (posts + grupos de WhatsApp/bairro + Facebook)",resp:"Rosa · 21/07"},
-   {id:"f4t2",cat:"divulgacao",txt:"Espalhar cartazes em UBS, farmácias, igrejas e mercados",resp:"Rosa · até 26/07"},
+   {id:"f4t2",cat:"divulgacao",txt:"Espalhar cartazes em UBS, farmácias, igrejas e mercados",resp:"Dupla · até 26/07"},
    {id:"f4t3",cat:"divulgacao",txt:"Acionar a rede de indicação (colegas enfermeiras, hospitais)",resp:"Dupla · até 26/07"},
    {id:"f4t4",cat:"divulgacao",txt:"Acompanhar as inscrições vs meta toda semana",resp:"Dupla · semanal"},
    {id:"f4t5",cat:"divulgacao",txt:"Decisão final 'vai / não-vai' conforme as inscrições",resp:"Dupla · 10/08"},
@@ -321,6 +353,8 @@ plano.forEach((sem,i)=>{
       ${sem.tarefas.map(t=>{
         const done=state[t.id]?"done":"";
         const c=cats[t.cat];
+        const campo=campos.has(t.id)?`<div class="campowrap"><input class="campo" data-cid="${t.id}" placeholder="✍️ Anote aqui o que ficou definido..." value="${(state['c_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
+        const link=links.has(t.id)?`<div class="campowrap"><input class="campo campolink" type="url" data-lid="${t.id}" placeholder="🔗 Cole o link do arquivo (Drive, Canva...)" value="${(state['l_'+t.id]||'').replace(/"/g,'&quot;')}"></div>`:"";
         return `<div class="task ${done}" data-task="${t.id}">
           <label class="cbwrap">
             <input type="checkbox" class="cb" data-id="${t.id}" ${state[t.id]?"checked":""}>
@@ -328,7 +362,7 @@ plano.forEach((sem,i)=>{
           </label>
           <label class="ttxt">${t.txt}<small>${t.resp}</small></label>
           <span class="tag" style="background:${c.cor}">${c.nome}</span>
-        </div>`;
+        </div>${campo}${link}`;
       }).join("")}
     </div>`;
   root.appendChild(wk);
@@ -507,6 +541,108 @@ function refreshEmenta(){
   const sp=document.getElementById("slidesProg"); if(sp) sp.textContent=`${feitos}/${eTotal} slides`;
 }
 
+// ---------- Calendário de conteúdo (divulgação) ----------
+const tipos = { Feed:"#C27250", Reels:"#7C18E6", Story:"#4A9CB5" };
+const conteudo = [
+ {semana:"Semana 1 · 21–27 jul", foco:"Apresentação e o problema", posts:[
+   {data:"Seg 21/07", tipo:"Feed", tema:"Lançamento — chegou a Academia do Cuidador",
+    copy:"Você já pensou em trabalhar cuidando de pessoas — mas não sabe por onde começar? ✋\n\nChegou a Academia do Cuidador: formação de cuidadores e acompanhantes, dada por enfermeiras, com prática de verdade.\n\n📍 Turma presencial em [cidade] — agosto\n🎓 Com certificado\n\nVagas limitadas. Salva esse post e fica de olho 👀\n\n#cuidadordeidosos #cuidador #[cidade]",
+    ideia:"Carrossel: capa 'Academia do Cuidador' + 3 cards (pra quem é · o que você aprende · próxima turma). Foto das duas enfermeiras."},
+   {data:"Qua 23/07", tipo:"Reels", tema:"A oportunidade — uma nova profissão",
+    copy:"O Brasil está envelhecendo e faltam cuidadores preparados. Essa pode ser a sua nova profissão. 💙\n\nCurso presencial em agosto, do zero ao certificado. Comenta EU QUERO que a gente te chama no direct.",
+    ideia:"Reels de 20–30s falando pra câmera: 'Toda família um dia precisa de um cuidador. Mas pouca gente sabe cuidar de verdade. Foi por isso que criamos esse curso.'"},
+   {data:"Sex 25/07", tipo:"Story", tema:"Bastidor + enquete",
+    copy:"Vem aí nossa 1ª turma! 🎉\nCaixinha: o que você mais quer aprender sobre cuidar de idosos?\nEnquete: Você faria do cuidado uma profissão? (Sim / Tenho vontade)",
+    ideia:"Sequência de stories mostrando vocês preparando o material, com figurinha de enquete e caixinha de perguntas."},
+ ]},
+ {semana:"Semana 2 · 28 jul–3 ago", foco:"Autoridade (conteúdo de valor)", posts:[
+   {data:"Seg 28/07", tipo:"Feed", tema:"3 erros ao cuidar de um idoso em casa",
+    copy:"3 erros comuns ao cuidar de um idoso em casa (e como evitar) 👇\n\n1) Dar banho com pressa e com frio\n2) Não mudar o idoso de posição (risco de escara)\n3) Misturar os remédios sem organização\n\nIsso e muito mais a gente ensina NA PRÁTICA no curso. 🎓\nInscrições em breve — link na bio.\n\n#cuidadordeidosos #saúde #cuidador",
+    ideia:"Carrossel educativo, 1 erro por card. Assinado por enfermeiras (reforça autoridade)."},
+   {data:"Qua 30/07", tipo:"Reels", tema:"Dica prática — transferência segura",
+    copy:"Como ajudar um idoso a levantar da cama sem machucar as suas costas (nem as dele). Salva pra não esquecer! 💪\n\nNo curso você treina isso na prática, com a gente do lado.",
+    ideia:"Reels demonstrando a transferência cama→cadeira (Aula 5 da ementa). Mostra que o curso é mão na massa."},
+   {data:"Sex 01/08", tipo:"Feed", tema:"Abrindo as inscrições",
+    copy:"Chegou a hora! 🎉 Abrimos as inscrições da 1ª turma da Academia do Cuidador.\n\n✅ 4 dias: 22, 23, 29 e 30/08 (dois fins de semana)\n✅ Presencial em [cidade]\n✅ Aula prática + certificado\n✅ Dado por enfermeiras\n\nVagas limitadas. Garanta a sua no link da bio 👆",
+    ideia:"Card com os 4 selos (datas · local · prático · certificado) + foto das duas. Fixar no topo do perfil."},
+ ]},
+ {semana:"Semana 3 · 4–10 ago", foco:"Prova social + empurrão", posts:[
+   {data:"Seg 04/08", tipo:"Story", tema:"Prova social + vagas restantes",
+    copy:"As inscrições já começaram e as vagas estão indo! 🔥\nRestam [X] vagas.\nQuer a sua? Manda QUERO no direct.",
+    ideia:"Stories com prints (autorizados) de quem está perguntando/se inscrevendo + contador de vagas."},
+   {data:"Qua 06/08", tipo:"Reels", tema:"Por que ESSE curso (diferencial)",
+    copy:"Existe curso de cuidador por aí. Mas quantos são dados por enfermeiras, com prática de verdade e foco em te ajudar a conseguir trabalho? 💙\n\nEsse é o nosso. Inscrições abertas — link na bio.",
+    ideia:"Vocês duas na câmera explicando o diferencial: enfermeiras + prática + empregabilidade."},
+   {data:"Sex 08/08", tipo:"Feed", tema:"Quebra de objeção — nunca cuidei de ninguém",
+    copy:"Mas eu nunca cuidei de ninguém, será que consigo? 🤔\n\nSIM. 🙌 Esse curso é do ZERO, pra quem quer começar. A gente ensina tudo passo a passo, na prática.\n\nÚltimos dias de inscrição — link na bio.\n\n#cuidador #primeiroemprego",
+    ideia:"Carrossel respondendo as 5 dúvidas mais comuns de quem quer começar."},
+ ]},
+ {semana:"Semana 4 · 11–17 ago", foco:"Urgência / última chamada", posts:[
+   {data:"Seg 11/08", tipo:"Story", tema:"Contagem regressiva",
+    copy:"⏳ Faltam poucos dias pra fechar as inscrições!\nA turma começa 22/08.\nNão fica de fora — link na bio.",
+    ideia:"Stories diários com a figurinha de contagem regressiva até 14/08."},
+   {data:"Qua 13/08", tipo:"Reels", tema:"Última chamada",
+    copy:"🚨 ÚLTIMA CHAMADA: as inscrições fecham AMANHÃ (14/08)!\n\nÚltima chance de garantir sua vaga na 1ª turma da Academia do Cuidador. Link na bio agora.",
+    ideia:"Reels curto e urgente, vocês falando 'é amanhã que fecha'. Texto grande na tela."},
+   {data:"Sex 15/08", tipo:"Story", tema:"Encerrou + lista de espera",
+    copy:"Inscrições ENCERRADAS! 🙏 Turma cheia — obrigada a todas!\n\nFicou de fora? Entra na lista de espera da próxima turma: manda LISTA no direct.",
+    ideia:"Story de agradecimento + captura da lista de espera (já começa a alimentar a 2ª turma)."},
+ ]},
+];
+
+const cRoot = document.getElementById("conteudoRoot");
+let pTotal = 0;
+conteudo.forEach((sem,wi)=>{
+  let body="";
+  sem.posts.forEach((p,pi)=>{
+    const id=`p${wi}i${pi}`; pTotal++;
+    const done=state[id]?"done":"";
+    const cor=tipos[p.tipo]||"#7C6F66";
+    body += `<div class="citem" data-citem="${id}">
+      <div class="task ${done}" data-task="${id}">
+        <label class="cbwrap"><input type="checkbox" class="cb" data-id="${id}" ${state[id]?"checked":""}><span class="cbbox">${CHK}</span></label>
+        <label class="ttxt"><span class="cdate">${p.data}</span> — ${p.tema}</label>
+        <span class="ctag" style="background:${cor}">${p.tipo}</span>
+      </div>
+      <div class="copybox" data-copy="${id}">${p.copy.replace(/</g,'&lt;')}</div>
+      <button class="copybtn" data-copybtn="${id}">Copiar legenda</button>
+      <div class="ideia"><b>Ideia:</b> ${p.ideia}</div>
+    </div>`;
+  });
+  const wk=document.createElement("div");
+  wk.className="week collapsed";
+  wk.innerHTML=`
+    <div class="whead">
+      <span class="wnum">SEM ${wi+1}</span>
+      <div class="wtitle"><b>${sem.foco}</b><span>${sem.semana} · ${sem.posts.length} publicações</span></div>
+      <span class="wprog" data-pprog="${wi}"></span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="tasks">${body}</div>`;
+  cRoot.appendChild(wk);
+  wk.querySelector(".whead").addEventListener("click",e=>{ if(e.target.closest("input")||e.target.closest(".copybtn"))return; wk.classList.toggle("collapsed"); });
+  wk.querySelectorAll(".ttxt").forEach(lbl=>{
+    lbl.addEventListener("click",()=>{ const cb=lbl.closest(".task").querySelector(".cb"); cb.checked=!cb.checked; cb.dispatchEvent(new Event("change")); });
+  });
+  wk.querySelectorAll(".copybtn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const box=wk.querySelector(`[data-copy="${btn.dataset.copybtn}"]`);
+      const txt=box?box.innerText:"";
+      navigator.clipboard.writeText(txt).then(()=>{ const o=btn.textContent; btn.textContent="✓ Copiado!"; setTimeout(()=>btn.textContent=o,1500); });
+    });
+  });
+});
+
+function refreshConteudo(){
+  let pub=0;
+  conteudo.forEach((sem,wi)=>{
+    let f=0;
+    sem.posts.forEach((p,pi)=>{ if(state[`p${wi}i${pi}`]){f++;pub++;} });
+    const el=document.querySelector(`[data-pprog="${wi}"]`); if(el) el.textContent=`${f}/${sem.posts.length}`;
+  });
+  const sp=document.getElementById("postProg"); if(sp) sp.textContent=`${pub}/${pTotal} publicados`;
+}
+
 function refresh(){
   let feitas=0;
   plano.forEach(sem=>{
@@ -526,7 +662,16 @@ document.querySelectorAll(".cb").forEach(cb=>{
     const id=cb.dataset.id;
     if(cb.checked)state[id]=true; else delete state[id];
     cb.closest(".task").classList.toggle("done",cb.checked);
-    save();refresh();refreshEmenta();
+    save();refresh();refreshEmenta();refreshConteudo();
+  });
+});
+
+// campos de texto (decisões) e de link (arquivos) — salvam ao digitar
+document.querySelectorAll(".campo").forEach(inp=>{
+  inp.addEventListener("input",()=>{
+    if(inp.dataset.cid) state["c_"+inp.dataset.cid]=inp.value;
+    if(inp.dataset.lid) state["l_"+inp.dataset.lid]=inp.value;
+    save();
   });
 });
 
@@ -538,14 +683,16 @@ document.getElementById("diasNum").textContent=dias;
 document.getElementById("expandAll").onclick=()=>document.querySelectorAll(".week").forEach(w=>w.classList.remove("collapsed"));
 document.getElementById("collapseAll").onclick=()=>document.querySelectorAll(".week").forEach(w=>w.classList.add("collapsed"));
 document.getElementById("resetBtn").onclick=()=>{
-  if(confirm("Apagar todas as marcações?")){state={};save();
+  if(confirm("Apagar todas as marcações? (suas anotações e links continuam salvos)")){
+    Object.keys(state).forEach(k=>{ if(!k.startsWith("c_")&&!k.startsWith("l_")) delete state[k]; });save();
     document.querySelectorAll(".cb").forEach(c=>c.checked=false);
     document.querySelectorAll(".task").forEach(t=>t.classList.remove("done"));
-    refresh();refreshEmenta();}
+    refresh();refreshEmenta();refreshConteudo();}
 };
 
 refresh();
 refreshEmenta();
+refreshConteudo();
 </script>
 </body>
 </html>
