@@ -159,6 +159,9 @@
   .subwrap.collapsed .chev{transform:rotate(-90deg)}
   .subwrap.collapsed .ementaSub{display:none}
   .ementaSub .week{margin-top:8px;box-shadow:none}
+  .turno{padding:14px 6px 2px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);border-top:1px solid var(--divider)}
+  .tasks .turno:first-child{border-top:none}
+  .turno+.aula{border-top:none}
 
   /* ---------- Calendário de conteúdo ---------- */
   .citem{padding:14px 6px}
@@ -216,7 +219,7 @@
   <header class="hero">
     <p class="eyebrow">Plano de Ação · Turma de Agosto</p>
     <h1>Do preparo à primeira turma</h1>
-    <p class="sub">Da preparação (hoje) até o 1º dia de aula — <b>22 de agosto de 2026</b>. Curso presencial em dois fins de semana: <b>22–23/08</b> e <b>29–30/08</b>.</p>
+    <p class="sub">Da preparação (hoje) até o 1º dia de aula — <b>22 de agosto de 2026</b>. Curso presencial em dois fins de semana: <b>22–23/08</b> e <b>29–30/08</b>, das 8h–12h e 13h–16h — <b>28h no total</b>.</p>
     <div class="note">
       <span>⚠️</span>
       <span><b>Lembrete legal:</b> o curso forma <b>cuidador</b> (apoio ao cuidado), como curso livre de qualificação. Não habilita a executar atos privativos de enfermagem. Deixar isso explícito no material e na divulgação.</span>
@@ -274,7 +277,7 @@ const links = new Set(["f1t5","f2t1","f2t2","f2t3","f2t4","f2t5","f3t3"]);
 const plano = [
  {id:"f0",titulo:"Fase 0 — Decisões",datas:"16–22 jun · semana de partida",ini:"2026-06-16",fim:"2026-06-22",tarefas:[
    {id:"f0t1",cat:"decisao",txt:"Definir o nome do curso e uma marca provisória",resp:"Dupla"},
-   {id:"f0t2",cat:"decisao",txt:"Definir a carga horária (~32–40h) e o número de vagas (15–20)",resp:"Dupla"},
+   {id:"f0t2",cat:"decisao",txt:"Carga horária definida: 28h (4 dias × 7h). Confirmar o número de vagas (15–20)",resp:"Dupla"},
    {id:"f0t3",cat:"decisao",txt:"Definir o preço (R$300–500) e a forma de pagamento",resp:"Géssica"},
    {id:"f0t4",cat:"decisao",txt:"Definir o critério 'vai / não-vai' (mínimo de inscritos) e a data-limite (10/08)",resp:"Dupla"},
    {id:"f0t5",cat:"decisao",txt:"Resolver CNPJ/MEI e como emitir o certificado (curso livre)",resp:"Dupla"},
@@ -393,136 +396,201 @@ plano.forEach((sem,i)=>{
 
 // ---------- Ementa do curso ----------
 const ementa = [
- {dia:"Dia 1", data:"22/08 · sábado", tema:"Fundamentos do cuidar", aulas:[
-   {nome:"Aula 1 — Quem é o cuidador", slides:[
-     "O que é ser cuidador (tipos: domiciliar, hospitalar, diarista)",
-     "Perfil e atitudes do bom cuidador",
-     "Ética, sigilo e respeito",
-     "Limites legais: o que o cuidador PODE fazer",
-     "Limites legais: o que é privativo da enfermagem (NÃO pode)",
-     "Direitos e deveres do cuidador",
+ {dia:"Dia 1 · Sáb 22/08", data:"8h–12h e 13h–16h · 7h", tema:"Fundamentos, envelhecimento e comunicação", blocos:[
+  {turno:"Manhã · 8h–12h (4h)", aulas:[
+   {nome:"Abertura — apresentação do curso e da turma (30min)", slides:[
+     "Boas-vindas e objetivos do curso",
+     "Como vai funcionar: 4 dias, prática e certificado",
+     "Quem somos: enfermeiras à frente da formação",
+     "Combinados e expectativas da turma",
    ]},
-   {nome:"Aula 2 — Envelhecimento e a pessoa idosa", slides:[
-     "O que muda no corpo ao envelhecer",
-     "Alterações comuns (visão, audição, memória, mobilidade)",
-     "Autonomia x dependência",
-     "Estatuto do Idoso: direitos essenciais",
-     "Sinais de maus-tratos e como agir",
+   {nome:"Aula 1 — Quem é o cuidador: papel e ética (1h30)", slides:[
+     "O que é ser cuidador e seus tipos (domiciliar, hospitalar, diarista, de PCD)",
+     "Perfil, postura e atitudes do bom cuidador",
+     "Ética, sigilo e respeito à privacidade",
+     "Limites profissionais: o que o cuidador PODE fazer",
+     "O que é privativo da enfermagem (o que NÃO pode fazer)",
+     "Direitos e deveres do cuidador (ocupação CBO 5162-10)",
    ]},
-   {nome:"Aula 3 — Comunicação e relação com paciente e família", slides:[
-     "Como se comunicar com o idoso",
-     "Escuta, paciência e empatia",
-     "Lidando com a família",
-     "Anotações do cuidador (registro do dia)",
-     "Lidando com conflitos",
+   {nome:"Aula 2 — Direitos e aspectos legais (1h)", slides:[
+     "Estatuto da Pessoa Idosa: direitos essenciais",
+     "Autonomia, independência e dignidade",
+     "Sinais de negligência, abandono e maus-tratos",
+     "Como e onde denunciar (Disque 100)",
    ]},
+   {nome:"Aula 3 — Processo de envelhecimento (1h)", slides:[
+     "Alterações fisiológicas do envelhecimento",
+     "Mudanças na visão, audição, memória e mobilidade",
+     "Envelhecimento ativo e saudável",
+     "Mitos e verdades sobre a velhice",
+   ]},
+  ]},
+  {turno:"Tarde · 13h–16h (3h)", aulas:[
+   {nome:"Aula 4 — Comunicação com o idoso e a família (1h30)", slides:[
+     "Comunicação assertiva e escuta ativa",
+     "Paciência, empatia e linguagem adequada",
+     "Comunicação com idoso com déficit auditivo ou visual",
+     "Relação com a família: alinhamento e limites",
+     "Lidando com conflitos e situações difíceis",
+   ]},
+   {nome:"Aula 5 — Aspectos psicológicos do envelhecimento (1h)", slides:[
+     "Solidão, isolamento e depressão no idoso",
+     "Respeito à autonomia e à vontade do idoso",
+     "Estimulação cognitiva e atividades no dia a dia",
+     "Quando pedir ajuda profissional",
+   ]},
+   {nome:"Aula 6 — Organização do cuidado e registros (30min)", slides:[
+     "Rotina diária do cuidado",
+     "Anotações do cuidador: o que e como registrar",
+     "Comunicação de mudanças à família e à equipe de saúde",
+   ]},
+  ]},
  ]},
- {dia:"Dia 2", data:"23/08 · domingo", tema:"Cuidados básicos no dia a dia (prática)", aulas:[
-   {nome:"Aula 4 — Higiene e conforto", slides:[
-     "Banho no leito e no chuveiro",
+ {dia:"Dia 2 · Dom 23/08", data:"8h–12h e 13h–16h · 7h", tema:"Higiene, pele e mobilização (prática)", blocos:[
+  {turno:"Manhã · 8h–12h (4h)", aulas:[
+   {nome:"Aula 7 — Higiene e conforto (2h) [Prática]", slides:[
+     "Higiene corporal: banho no chuveiro e banho no leito",
      "Higiene íntima e troca de fraldas",
-     "Higiene oral (incluindo prótese)",
-     "Cabelo, unhas e barba",
-     "Roupa de cama e conforto",
-     "[Prática] Banho no leito",
+     "Higiene oral (inclusive prótese dentária)",
+     "Cuidados com cabelo, unhas, barba, olhos e ouvidos",
+     "Troca de roupa de cama com o idoso acamado",
+     "Conforto e arrumação do ambiente",
+     "[Prática] Banho no leito e troca de roupa de cama",
    ]},
-   {nome:"Aula 5 — Mobilização e prevenção de quedas", slides:[
-     "Posicionamento no leito",
-     "Mudança de decúbito",
-     "Transferência cama–cadeira",
-     "Cadeira de rodas e andador",
-     "Prevenção de quedas em casa",
+   {nome:"Aula 8 — Cuidados com a pele e prevenção de lesão por pressão (LPP) (2h)", slides:[
+     "O que é lesão por pressão (LPP) e por que acontece",
+     "Fatores de risco e áreas de maior risco (proeminências ósseas)",
+     "Estágios da LPP: como reconhecer",
+     "Prevenção: mudança de decúbito e reposicionamento",
+     "Cuidados com a pele: hidratação, secagem e inspeção diária",
+     "Coxins, colchões e dispositivos de alívio de pressão",
+     "O que NÃO fazer (ex.: massagear áreas avermelhadas)",
+   ]},
+  ]},
+  {turno:"Tarde · 13h–16h (3h)", aulas:[
+   {nome:"Aula 9 — Mobilização, posicionamento e prevenção de quedas (2h) [Prática]", slides:[
+     "Posicionamento no leito e mudança de decúbito",
+     "Transferência segura cama–cadeira (mecânica corporal)",
+     "Uso de cadeira de rodas, andador e bengala",
+     "Como prevenir quedas dentro de casa",
+     "Como levantar o idoso do chão com segurança",
      "[Prática] Transferência e posicionamento",
    ]},
-   {nome:"Aula 6 — Prevenção de lesão por pressão (escaras)", slides:[
-     "O que é a escara e por que acontece",
-     "Pontos de risco no corpo",
-     "Como prevenir (mudança de posição, pele hidratada)",
-     "Sinais de alerta na pele",
-     "O que NÃO fazer",
+   {nome:"Aula 10 — Ambiente seguro e tecnologias assistivas (1h)", slides:[
+     "Adaptação da casa: banheiro, quarto e circulação",
+     "Barras de apoio, tapetes e iluminação",
+     "Tecnologias e dispositivos que ajudam no cuidado",
+     "Prevenção de acidentes domésticos comuns",
    ]},
-   {nome:"Aula 7 — Alimentação e hidratação", slides:[
-     "Alimentação saudável do idoso",
-     "Ajudar na hora de comer",
-     "Engasgo e disfagia: cuidados",
-     "Hidratação",
-     "Noções de dietas especiais (diabetes, hipertensão)",
-   ]},
+  ]},
  ]},
- {dia:"Dia 3", data:"29/08 · sábado", tema:"Saúde, doenças e segurança", aulas:[
-   {nome:"Aula 8 — Doenças crônicas mais comuns", slides:[
-     "Hipertensão",
-     "Diabetes",
-     "AVC (derrame)",
-     "Parkinson",
+ {dia:"Dia 3 · Sáb 29/08", data:"8h–12h e 13h–16h · 7h", tema:"Nutrição, sinais vitais, medicação e doenças", blocos:[
+  {turno:"Manhã · 8h–12h (4h)", aulas:[
+   {nome:"Aula 11 — Alimentação, hidratação e disfagia (1h30)", slides:[
+     "Alimentação saudável e necessidades do idoso",
+     "Ajuda na hora de comer e posicionamento correto",
+     "Disfagia e prevenção de engasgo (broncoaspiração)",
+     "Hidratação adequada",
+     "Dietas especiais: diabetes, hipertensão e doença renal (noções)",
+     "Cuidados com sonda de alimentação (noções e limites)",
+   ]},
+   {nome:"Aula 12 — Sinais vitais e observação do estado de saúde (1h30) [Prática]", slides:[
+     "Sinais vitais: o que são e por que medir",
+     "Temperatura: como medir e valores de alerta",
+     "Pulso e frequência respiratória",
+     "Pressão arterial: noções e quando se preocupar",
+     "Glicemia capilar: noções e sinais de alerta",
+     "[Prática] Aferição de sinais vitais",
+   ]},
+   {nome:"Aula 13 — Administração de medicamentos com segurança (1h)", slides:[
+     "Vias de administração e os '9 certos' da medicação",
+     "Organização de horários e tabela de medicamentos",
+     "Guarda, validade e armazenamento correto",
+     "Limites do cuidador (o que é da enfermagem)",
+     "O que fazer em caso de erro ou esquecimento",
+   ]},
+  ]},
+  {turno:"Tarde · 13h–16h (3h)", aulas:[
+   {nome:"Aula 14 — Doenças crônicas mais comuns (1h30)", slides:[
+     "Hipertensão arterial",
+     "Diabetes mellitus",
+     "AVC (derrame): sinais e cuidados",
+     "Doença de Parkinson",
+     "Doenças respiratórias e cardíacas (noções)",
      "Como apoiar o tratamento no dia a dia",
    ]},
-   {nome:"Aula 9 — Alzheimer e demências", slides:[
-     "O que é demência e Alzheimer",
-     "Fases da doença",
-     "Lidando com confusão e agitação",
-     "Rotina e segurança em casa",
-     "Comunicação com quem tem demência",
+   {nome:"Aula 15 — Alzheimer e outras demências (1h30)", slides:[
+     "O que é demência e doença de Alzheimer",
+     "Fases da doença e o que esperar",
+     "Lidando com confusão, agitação e agressividade",
+     "Rotina, segurança e prevenção de fugas",
+     "Comunicação com a pessoa com demência",
+     "Apoio ao familiar e ao cuidador",
    ]},
-   {nome:"Aula 10 — Medicação com segurança", slides:[
-     "Os '5 certos' da medicação",
-     "Administração por via oral",
-     "Organização e horários (tabela de medicação)",
-     "Limites do cuidador (o que é da enfermagem)",
-     "Guarda e validade dos remédios",
-   ]},
-   {nome:"Aula 11 — Sinais de alerta e primeiros socorros", slides:[
-     "Sinais vitais: o que observar",
-     "Quando chamar ajuda / SAMU 192",
-     "Engasgo: o que fazer",
-     "Queda, desmaio e convulsão",
-     "Pequenos ferimentos e queimaduras",
-   ]},
+  ]},
  ]},
- {dia:"Dia 4", data:"30/08 · domingo", tema:"Hospital, mente e mercado", aulas:[
-   {nome:"Aula 12 — Acompanhante hospitalar", slides:[
-     "Papel do acompanhante no hospital",
-     "Rotina hospitalar e a equipe de saúde",
-     "O que observar e relatar",
-     "Direitos do acompanhante",
-     "Higiene e cuidados no ambiente hospitalar",
+ {dia:"Dia 4 · Dom 30/08", data:"8h–12h e 13h–16h · 7h", tema:"Emergências, paliativos, hospital e mercado", blocos:[
+  {turno:"Manhã · 8h–12h (4h)", aulas:[
+   {nome:"Aula 16 — Primeiros socorros e urgências (2h) [Prática]", slides:[
+     "Como agir numa emergência e acionar o SAMU 192",
+     "Engasgo e asfixia: manobra de desobstrução",
+     "Quedas, desmaios e convulsões",
+     "Hemorragias e ferimentos",
+     "Queimaduras",
+     "Hipoglicemia e mal súbito",
+     "Noções de parada cardiorrespiratória e RCP",
+     "[Prática] Manobra de engasgo e posição de segurança",
    ]},
-   {nome:"Aula 13 — Saúde mental e autocuidado", slides:[
-     "Saúde emocional do paciente",
-     "Solidão e depressão no idoso",
-     "Sobrecarga do cuidador (burnout)",
-     "Autocuidado: como se proteger",
-     "Rede de apoio",
-   ]},
-   {nome:"Aula 14 — Noções de cuidados paliativos", slides:[
+   {nome:"Aula 17 — Cuidados paliativos e fim de vida (1h)", slides:[
      "O que são cuidados paliativos",
-     "Conforto e dignidade",
-     "Apoio à família",
-     "O papel do cuidador nesse momento",
+     "Conforto, controle da dor e dignidade",
+     "Sinais de fim de vida e como acolher",
+     "Apoio à família e ao luto",
    ]},
-   {nome:"Aula 15 — Mercado de trabalho e encerramento", slides:[
-     "Como se apresentar (currículo simples)",
-     "Documentos e contratação",
-     "Onde encontrar vagas",
-     "Combinando valores e direitos",
-     "Entrega de certificados e foto da turma",
+   {nome:"Aula 18 — Saúde e autocuidado do cuidador (1h)", slides:[
+     "Sobrecarga e síndrome de burnout do cuidador",
+     "Cuidando do corpo: postura e prevenção de lesões",
+     "Saúde emocional e rede de apoio",
+     "Organização do tempo e limites",
    ]},
+  ]},
+  {turno:"Tarde · 13h–16h (3h)", aulas:[
+   {nome:"Aula 19 — Acompanhante hospitalar (1h30)", slides:[
+     "Papel do acompanhante no hospital (diferente do cuidador domiciliar)",
+     "Rotina hospitalar e a equipe de saúde",
+     "O que observar e relatar à equipe",
+     "Direitos do acompanhante e do paciente",
+     "Higiene, prevenção de infecção e segurança no hospital",
+   ]},
+   {nome:"Aula 20 — Mercado de trabalho e encerramento (1h30)", slides:[
+     "Como se apresentar: currículo simples e entrevista",
+     "Documentação e formas de contratação",
+     "Onde encontrar vagas (agências, famílias, home care)",
+     "Combinando valores, jornada e direitos",
+     "Programas e apoio: SUS e SUAS",
+     "Avaliação do curso, entrega de certificados e foto da turma",
+   ]},
+  ]},
  ]},
 ];
 
 const eRoot = document.getElementById("ementaRoot");
 let eTotal = 0;
 ementa.forEach((d,di)=>{
-  let body="";
-  d.aulas.forEach((a,ai)=>{
-    body += `<div class="aula">${a.nome}</div>`;
-    a.slides.forEach((s,si)=>{
-      const id=`e${di}a${ai}s${si}`; eTotal++;
-      const done=state[id]?"done":"";
-      body += `<div class="task ${done}" data-task="${id}">
-        <label class="cbwrap"><input type="checkbox" class="cb" data-id="${id}" ${state[id]?"checked":""}><span class="cbbox">${CHK}</span></label>
-        <label class="ttxt">${s}</label>
-      </div>`;
+  let body="", aulaCount=0;
+  d.blocos.forEach((bl,bi)=>{
+    body += `<div class="turno">${bl.turno}</div>`;
+    bl.aulas.forEach((a,ai)=>{
+      aulaCount++;
+      body += `<div class="aula">${a.nome}</div>`;
+      a.slides.forEach((s,si)=>{
+        const id=`e${di}b${bi}a${ai}s${si}`; eTotal++;
+        const done=state[id]?"done":"";
+        body += `<div class="task ${done}" data-task="${id}">
+          <label class="cbwrap"><input type="checkbox" class="cb" data-id="${id}" ${state[id]?"checked":""}><span class="cbbox">${CHK}</span></label>
+          <label class="ttxt">${s}</label>
+        </div>`;
+      });
     });
   });
   const wk=document.createElement("div");
@@ -530,7 +598,7 @@ ementa.forEach((d,di)=>{
   wk.innerHTML=`
     <div class="whead">
       <span class="wnum">${d.dia.toUpperCase()}</span>
-      <div class="wtitle"><b>${d.tema}</b><span>${d.data} · ${d.aulas.length} aulas</span></div>
+      <div class="wtitle"><b>${d.tema}</b><span>${d.data} · ${aulaCount} aulas</span></div>
       <span class="wprog" data-eprog="${di}"></span>
       <span class="chev">▾</span>
     </div>
@@ -549,7 +617,7 @@ function refreshEmenta(){
   let feitos=0;
   ementa.forEach((d,di)=>{
     let f=0,t=0;
-    d.aulas.forEach((a,ai)=>a.slides.forEach((s,si)=>{ t++; if(state[`e${di}a${ai}s${si}`]){f++;feitos++;} }));
+    d.blocos.forEach((bl,bi)=>bl.aulas.forEach((a,ai)=>a.slides.forEach((s,si)=>{ t++; if(state[`e${di}b${bi}a${ai}s${si}`]){f++;feitos++;} })));
     const el=document.querySelector(`[data-eprog="${di}"]`); if(el) el.textContent=`${f}/${t}`;
   });
   const pct=eTotal?Math.round(feitos/eTotal*100):0;
@@ -573,11 +641,11 @@ const conteudo = [
  ]},
  {semana:"Semana 2 · 28 jul–3 ago", foco:"Autoridade (conteúdo de valor)", posts:[
    {data:"Seg 28/07", tipo:"Feed", tema:"3 erros ao cuidar de um idoso em casa",
-    copy:"3 erros comuns ao cuidar de um idoso em casa (e como evitar) 👇\n\n1) Dar banho com pressa e com frio\n2) Não mudar o idoso de posição (risco de escara)\n3) Misturar os remédios sem organização\n\nIsso e muito mais a gente ensina NA PRÁTICA no curso. 🎓\nInscrições em breve — link na bio.\n\n#cuidadordeidosos #saúde #cuidador",
+    copy:"3 erros comuns ao cuidar de um idoso em casa (e como evitar) 👇\n\n1) Dar banho com pressa e com frio\n2) Não mudar o idoso de posição (risco de lesão por pressão)\n3) Misturar os remédios sem organização\n\nIsso e muito mais a gente ensina NA PRÁTICA no curso. 🎓\nInscrições em breve — link na bio.\n\n#cuidadordeidosos #saúde #cuidador",
     ideia:"Carrossel educativo, 1 erro por card. Assinado por enfermeiras (reforça autoridade)."},
    {data:"Qua 30/07", tipo:"Reels", tema:"Dica prática — transferência segura",
     copy:"Como ajudar um idoso a levantar da cama sem machucar as suas costas (nem as dele). Salva pra não esquecer! 💪\n\nNo curso você treina isso na prática, com a gente do lado.",
-    ideia:"Reels demonstrando a transferência cama→cadeira (Aula 5 da ementa). Mostra que o curso é mão na massa."},
+    ideia:"Reels demonstrando a transferência cama–cadeira (Aula 9 da ementa). Mostra que o curso é mão na massa."},
    {data:"Sex 01/08", tipo:"Feed", tema:"Abrindo as inscrições",
     copy:"Chegou a hora! 🎉 Abrimos as inscrições da 1ª turma da Academia do Cuidador.\n\n✅ 4 dias: 22, 23, 29 e 30/08 (dois fins de semana)\n✅ Presencial em [cidade]\n✅ Aula prática + certificado\n✅ Dado por enfermeiras\n\nVagas limitadas. Garanta a sua no link da bio 👆",
     ideia:"Card com os 4 selos (datas · local · prático · certificado) + foto das duas. Fixar no topo do perfil."},
